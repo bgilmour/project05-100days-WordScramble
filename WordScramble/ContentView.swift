@@ -45,6 +45,11 @@ struct ContentView: View {
             return
         }
 
+        guard isLongAndDifferent(word: answer) else {
+            wordError(title: "Too short or the same", message: "Enter a word longer than 3 letters that isn't the displayed word")
+            return
+        }
+
         guard isOriginal(word: answer) else {
             wordError(title: "Word used already", message: "Be more original.")
             return
@@ -78,6 +83,10 @@ struct ContentView: View {
             }
         }
         return true
+    }
+
+    func isLongAndDifferent(word: String) -> Bool {
+        word.count >= 3 && word != rootWord
     }
 
     func isReal(word: String) -> Bool {
