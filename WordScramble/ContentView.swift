@@ -29,11 +29,31 @@ struct ContentView: View {
                 }
             }
             .navigationBarTitle(rootWord)
+            .navigationBarItems(leading: displayNewWordButton)
             .onAppear(perform: startGame)
             .alert(isPresented: $showingError) {
                 Alert(title: Text(errorTitle), message: Text(errorMessage), dismissButton: .default(Text("OK")))
             }
         }
+    }
+
+    var displayNewWordButton: some View {
+        Button(action: startGame) {
+            Text("New word")
+        }
+    }
+
+    func startGame() {
+        if let startWordsUrl = Bundle.main.url(forResource: "start", withExtension: "txt") {
+            if let startWords = try? String(contentsOf: startWordsUrl) {
+                let allWords = startWords.components(separatedBy: "\n")
+                rootWord = allWords.randomElement() ?? "silkworm"
+                usedWords = []
+                return
+            }
+        }
+
+        fatalError("Could not load start.txt from bundle")
     }
 
     func addNewWord() {
@@ -101,18 +121,6 @@ struct ContentView: View {
         errorTitle = title
         errorMessage = message
         showingError = true
-    }
-
-    func startGame() {
-        if let startWordsUrl = Bundle.main.url(forResource: "start", withExtension: "txt") {
-            if let startWords = try? String(contentsOf: startWordsUrl) {
-                let allWords = startWords.components(separatedBy: "\n")
-                rootWord = allWords.randomElement() ?? "silkworm"
-                return
-            }
-        }
-
-        fatalError("Could not load start.txt from bundle")
     }
 
 }
