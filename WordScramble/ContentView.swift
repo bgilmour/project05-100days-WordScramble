@@ -18,21 +18,17 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack {
-                TextField("Enter your word", text: $newWord, onCommit: addNewWord)
-                    .autocapitalization(.none)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
+                displayTextEntry
 
-                List(usedWords, id: \.self) {
-                    Image(systemName: "\($0.count).circle")
-                    Text($0)
-                }
+                displayWordList
+
+                displayGameScore
             }
             .navigationBarTitle(rootWord)
             .navigationBarItems(leading: displayNewWordButton)
             .onAppear(perform: startGame)
             .alert(isPresented: $showingError) {
-                Alert(title: Text(errorTitle), message: Text(errorMessage), dismissButton: .default(Text("OK")))
+                displayAlert
             }
         }
     }
@@ -41,6 +37,36 @@ struct ContentView: View {
         Button(action: startGame) {
             Text("New word")
         }
+    }
+
+    var displayTextEntry: some View {
+        TextField("Enter your word", text: $newWord, onCommit: addNewWord)
+            .autocapitalization(.none)
+            .textFieldStyle(RoundedBorderTextFieldStyle())
+            .padding()
+    }
+
+    var displayWordList: some View {
+        List(usedWords, id: \.self) {
+            Image(systemName: "\($0.count).circle")
+            Text($0)
+        }
+    }
+
+    var displayGameScore: some View {
+        Text(gameScore)
+            .font(.title)
+            .foregroundColor(.blue)
+    }
+
+    var gameScore: String {
+        let wordCount = usedWords.count
+        let letterCount = usedWords.map {$0.count}.reduce(0, +)
+        return "Words: \(wordCount) Letters: \(letterCount)"
+    }
+
+    var displayAlert: Alert {
+        Alert(title: Text(errorTitle), message: Text(errorMessage), dismissButton: .default(Text("OK")))
     }
 
     func startGame() {
